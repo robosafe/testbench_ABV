@@ -4,17 +4,18 @@ Testbench used to demonstrate assurance-based verification of an object-handover
 
 ----------------CONTENTS------------------------------------------------
 
-This repo includes five ROS packages:
+The ROS packages in this repo are divided across five top-level folders:
 
-   bert2_gazebo contains the files used to specifically to implement and test the handover scenario.  Its subfolders include:
-      scripts: Control code for robot (in simulation and hardware experiments) and human (in simulation). Code coverage collector.
-      src: Additional low-level control modules for robot and human
-      shell_scripts: Scripts to run batch mode.
-      tests: Test generators and examples of stimuli (test templates with high-level human actions) from model-based test generation.
-      launch: Launch files for initialising simulations and hardware experiments.
-      monitors: Assertion monitors used to check behaviour of the system.
-      meshes, robots, urdf, worlds: Physical modelling of robot, human, and environment.  
-   bert2_common, bert2_interface, bert2_robot, moveit_robots: Additional packages to support the BERT2 system, not specific to the handover scenario or testbench.  They include the physical model, motion planning configuration, low-level control and messaging.
+* bert2_gazebo contains the files used to specifically to implement and test the handover scenario.  Its subfolders include:
+   * scripts: Control code for robot (in simulation and hardware experiments) and human (in simulation). Code coverage collector.
+   * src: Additional low-level control modules for robot and human
+   * shell_scripts: Scripts to run batch mode.
+   * tests: Test generators and examples of stimuli (test templates with high-level human actions) from model-based test generation.
+   * launch: Launch files for initialising simulations and hardware experiments.
+   * monitors: Assertion monitors used to check behaviour of the system.
+   * meshes, robots, urdf, worlds: Physical modelling of robot, human, and environment.  
+
+* bert2_common, bert2_interface, bert2_robot, moveit_robots: Additional packages to support the BERT2 system, not specific to the handover scenario or testbench.  They include the physical model, motion planning configuration, low-level control and messaging.
 
 
 ----------------------LICENSE--------------
