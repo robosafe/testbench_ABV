@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>bert2_bringup</name>
+  <version>0.1.0</version>
+  <description>
+    This package contains lauch files to bring up a ROS system for working with
+    the BERT2 robot.
+  </description>
+
+  <maintainer email="abroun@dawnrobotics.co.uk">Alan Broun</maintainer>
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>bert2_description</run_depend>
+</package>

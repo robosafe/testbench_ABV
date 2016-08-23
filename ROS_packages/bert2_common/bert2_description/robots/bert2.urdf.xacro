@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="bert2">
+	<xacro:include filename="$(find bert2_description)/urdf/bert2_body.urdf.xacro" />
+	
+	<xacro:bert2_body prefix=""/>
+</robot>
+

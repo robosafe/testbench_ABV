@@ -1,0 +1,10 @@
+<launch>
+
+  <!-- send bert2 urdf to param server -->
+  <include file="$(find bert2_description)/robots/upload_bert2.launch" />
+
+  <node output="screen" name="robot_control_server" pkg="bert2_motor_control" type="robot_control_server.py" />
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" ns="bert2"  />
+
+</launch>

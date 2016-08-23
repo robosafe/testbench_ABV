@@ -1,0 +1,33 @@
+<launch>
+  <!-- Created by David Western, April 2016 
+       This script launches bert2 for use in experiments with the actual hardware. -->
+
+  #<param name="is_this_a_simulation" value="0" />
+
+  <!-- Load robot to Parameter Server-->
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find bert2_description)/robots/bert2_gazebo.urdf.xacro'" />
+
+
+
+    
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find bert2_gazebo)/config/joint_controllers.yaml" command="load"/> 
+
+  <!-- Load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/bert2" args="hip_rotor_joint_posControlr hip_flexor_joint_posControlr neck_flexor_joint_posControlr neck_rotor_joint_posControlr left_shoulder_flex_joint_posControlr left_shoulder_abduction_joint_posControlr left_humeral_rot_joint_posControlr left_elbow_flex_joint_posControlr left_wrist_pronation_joint_posControlr left_wrist_abduction_joint_posControlr left_wrist_flex_joint_posControlr left_index_finger_flex_joint_posControlr left_index_finger2_flex_joint_posControlr left_mid_finger_flex_joint_posControlr left_mid_finger2_flex_joint_posControlr  left_anular_finger_flex_joint_posControlr left_anular_finger2_flex_joint_posControlr left_little_finger_flex_joint_posControlr left_little_finger2_flex_joint_posControlr left_thumb_flex_joint_posControlr left_thumb2_flex_joint_posControlr right_shoulder_flex_joint_posControlr joint_state_controller"/>
+
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+  <remap from="/joint_states" to="/bert2/joint_states"/>
+  </node>
+
+  <node output="screen" name="vicon_broadcaster" pkg="bert2_egosphere" type="RawViconObjectBroadcaster.py" />
+
+  <node output="screen" name="robot_control_server" pkg="bert2_motor_control" type="robot_control_server.py" />
+
+  <include file="$(find bert2_gazebo_moveit_config)/launch/move_group.launch" />
+
+</launch>

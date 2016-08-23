@@ -1,0 +1,53 @@
+<launch>
+
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="verbose" default="false"/>
+  <arg name="world_name" default="worlds/empty.world"/> <!-- Note: the world_name is with respect to GAZEBO_RESOURCE_PATH environmental variable -->
+  <arg name="use_server_plugin" default="false"/>
+  <arg name="use_client_plugin" default="false"/>
+
+  <!-- set use_sim_time flag -->
+  <group if="$(arg use_sim_time)">
+    <param name="/use_sim_time" value="true" />
+  </group>
+
+  <!-- set command arguments -->
+  <arg unless="$(arg paused)" name="command_arg1" value=""/>
+  <arg     if="$(arg paused)" name="command_arg1" value="-u"/>
+  <arg unless="$(arg headless)" name="command_arg2" value=""/>
+  <arg     if="$(arg headless)" name="command_arg2" value="-r"/>
+  <arg unless="$(arg verbose)" name="command_arg3" value=""/>
+  <arg     if="$(arg verbose)" name="command_arg3" value="--verbose"/>
+  <arg unless="$(arg debug)" name="script_type" value="gzserver"/>
+  <arg     if="$(arg debug)" name="script_type" value="debug"/>
+  <arg unless="$(arg use_server_plugin)" name="server_plugin_arg" value=""/>
+  <!-- N.B. There are two options below for the sim_step_monitoring plugin: one which
+       pauses on each simulation step to let the assertion monitors run, and one which 
+       doesn't pause.  When using the pausing version, make sure you uncomment the line in
+       assertion_monitor_manager.py that unpauses after each sim-step.  This doesn't work 
+       perfectly at the moment; it seems to require occasional manual unpausing. -->
+  <!-- <arg     if="$(arg use_server_plugin)" name="server_plugin_arg" 
+        value="-s $(find bert2_gazebo)/plugins/build/libsim_step_monitoring.so" /> -->
+  <arg     if="$(arg use_server_plugin)" name="server_plugin_arg" 
+        value="-s $(find bert2_gazebo)/plugins/build/libsim_step_monitoring_noPause.so" />
+  <arg unless="$(arg use_client_plugin)" name="client_plugin_arg" value=""/>
+  <arg     if="$(arg use_client_plugin)" name="client_plugin_arg"
+        value="-g $(find bert2_gazebo)/plugins/build/libsysPlugTest.so" />
+  <arg name="seed" value="--seed 1" />
+
+  <!-- start gazebo server-->
+  <node name="gazebo" pkg="gazebo_ros" type="$(arg script_type)" respawn="false" output="screen"
+	args="$(arg command_arg1) $(arg command_arg2) $(arg command_arg3) $(arg server_plugin_arg) $(arg world_name) $(arg seed)"/>
+	
+  <!-- start gazebo client -->
+  <group if="$(arg gui)">
+    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"
+        args="$(arg client_plugin_arg)" />
+  </group>
+
+</launch>

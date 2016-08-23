@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <property name="prefix" value="" />
+
+	<link name="${prefix}object_link">
+            <visual>
+                <!--origin xyz="0.3 -0.3 0.555" rpy="0 0 0"/-->
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry name="${prefix}object_link_visual_geom">
+                    <cylinder length="0.348" radius="0.0275"/>
+                </geometry>
+            </visual>
+            <collision>
+                <!--origin xyz="0.3 -0.3 0.555" rpy="0 0 0"/-->
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry name="${prefix}object_link_coll_geom">
+                    <cylinder length="0.348" radius="0.0275"/>
+                </geometry>
+            </collision>
+    	    <inertial>
+    		<!--<mass value="0.5" />:
+    		<inertia ixx="0" iyy="0" izz="0" ixy="0" ixz="0" iyz="0" />-->
+    		<mass value="0.1" />:
+    		<inertia ixx="0.01" iyy="0.01" izz="0.01" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}object_link">
+	   <static>true</static>
+	   <material>Gazebo/Blue</material>
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>1000.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+
+
+
+</robot>

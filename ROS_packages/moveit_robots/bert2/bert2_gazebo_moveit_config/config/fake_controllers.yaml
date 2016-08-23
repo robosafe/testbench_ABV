@@ -1,0 +1,12 @@
+controller_list:
+  - name: fake_body_arm_controller
+    joints:
+      - hip_rotor_joint
+      - hip_flexor_joint
+      - left_shoulder_flex_joint
+      - left_shoulder_abduction_joint
+      - left_humeral_rot_joint
+      - left_elbow_flex_joint
+      - left_wrist_pronation_joint
+      - left_wrist_abduction_joint
+      - left_wrist_flex_joint

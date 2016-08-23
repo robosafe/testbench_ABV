@@ -1,0 +1,2012 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+ 
+<!-- bert2_body_v3
+     Built by David Western, Feb 2016. 
+     Prior contributions from Alan Broun and Dejanira Araiza-Illan -->
+
+    <property name="M_PI" value="3.1415926535897931" />
+    <property name="BASE_LENGTH" value="0.43" /> 
+    <property name="HIP_FIXED_BASE_LENGTH" value="0.20" />
+	<property name="HIP_ROT_LENGTH" value="0.28"/>
+	<property name="HIP_FLEX_LENGTH" value="0.369" /> 
+	<property name="NECK_LENGTH" value="0.125" />
+	<property name="SHOULDER_LENGTH" value="0.24625" />
+	<property name="NECK_TO_SHOULDER_DIST" value="0.20" />
+    <property name="SHOULDER_TO_NECK_LENGTH" value="0.078" />
+    <property name="HIP_TO_NECK_LENGTH" value="1" />
+    <property name="SHOULDER_LENGTH" value="0.191" />
+    <property name="HUMERAL_LENGTH" value="0.27325" />
+    <property name="FOREARM_LENGTH" value="0.2308" />
+    <property name="WRIST_TO_HAND_LENGTH" value="0.095" />
+	<property name="WRIST_LENGTH" value="0.04" />
+	<property name="PALM_LENGTH" value="0.09" />
+	<property name="FINGER_SEGMENT_LENGTH" value="0.055" />
+	<property name="FINGER_EFFORT_LIMIT" value="0.5" />
+
+    <gazebo>
+  	<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+  	  <robotNamespace>/bert2</robotNamespace>
+  	</plugin>
+    </gazebo>
+    
+	<xacro:macro name="bert2_body" params="prefix">
+
+	<!-- FIXING ROBOT BASE TO THE WORLD FRAME -->
+
+	<link name="world"/>
+
+    	<gazebo reference="world">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+        <joint name="${prefix}base_joint" type="fixed">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <parent link="world"/>
+            <child link="${prefix}base_link"/>
+        </joint>
+
+<!-- THE TABLE ON WHICH THE ROBOT LAYS-->
+
+        <link name="${prefix}base_link">
+            <visual>
+                <origin xyz="0.0 0.0 ${BASE_LENGTH/2}" rpy="0 0 0" />
+                <geometry name="${prefix}base_link_visual_geom">
+                    <box size="0.8 0.8 ${BASE_LENGTH}" />
+                </geometry>
+                <material name="Blue">
+                    <color rgba="0 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 ${BASE_LENGTH/2}" rpy="0 0 0" />
+                <geometry name="${prefix}base_link_coll_geom">
+                    <box size="0.8 0.8 ${BASE_LENGTH}" />
+                </geometry>
+            </collision>
+    	    <inertial>
+    		<mass value="1" />:
+    		 <inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}base_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+
+<!-- PEDESTAL FOR RAISED OBJECT -->
+
+	<joint name="${prefix}pedestal_joint" type="fixed">
+            <origin xyz="0.3 -0.44 0.65" rpy="0 0 0"/>
+            <parent link="world"/>
+            <child link="${prefix}pedestal_link"/>
+        </joint>
+
+	<link name="${prefix}pedestal_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry name="${prefix}pedestal_link_visual_geom">
+                    <cylinder length="0.405" radius="0.15"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry name="${prefix}pedestal_link_coll_geom">
+                    <cylinder length="0.405" radius="0.15"/>
+                </geometry>
+            </collision>
+    	    <inertial>
+    		<mass value="10" />:
+    		<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}pedestal_link">
+	   <static>true</static>
+	   <material>Gazebo/White</material>
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+
+<!-- FIXED BASE OF THE ROBOT, ATTACHED TO THE TABLE WITH SCREWS -->
+
+	<joint name="${prefix}hip_base_joint" type="fixed">
+            <origin xyz="0.0 0.0 ${BASE_LENGTH+HIP_FIXED_BASE_LENGTH/2}" rpy="0.0 0.0 0.0"/>
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}hip_base_link"/>
+        </joint>
+
+	<link name="${prefix}hip_base_link">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}hip_base_link_visual_geom">
+                    <cylinder length="${HIP_FIXED_BASE_LENGTH}" radius="0.075"/>
+                </geometry>
+                <material name="Blue">
+                    <color rgba="0 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}hip_base_link_coll_geom">
+                    <cylinder length="${HIP_FIXED_BASE_LENGTH}" radius="0.075"/>
+                </geometry>
+            </collision>
+    	    <inertial>
+    		<mass value="1" />:
+    		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}hip_base_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+        
+<!-- HIP ROTATION LINK -->
+
+        <joint name="${prefix}hip_rotor_joint" type="revolute">
+            <origin xyz="0.0 0.0 ${HIP_FIXED_BASE_LENGTH/2+HIP_ROT_LENGTH/2}" rpy="${M_PI} -0.0 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/2}" upper="${M_PI/2}" velocity="0.26"/>
+            <parent link="${prefix}hip_base_link"/>
+            <child link="${prefix}hip_rotor_link"/>
+        </joint>
+
+	<transmission name="${prefix}hip_rotor_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}hip_rotor_joint">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+ 	    </joint>
+   	    <actuator name="${prefix}hip_rotor_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}hip_rotor_link">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}hip_rotor_link_visual_geom">
+                    <cylinder length="${HIP_ROT_LENGTH}" radius="0.1"/>
+                </geometry>
+                <material name="Red">
+                    <color rgba="1 0 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}hip_rotor_link_coll_geom">
+                    <cylinder length="${HIP_ROT_LENGTH}" radius="0.1"/>
+                </geometry>
+            </collision>
+    	    <inertial>
+    		<mass value="1" />:
+    		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+            </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}hip_rotor_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+        
+<!-- FLEXION OF THE TORSO (LOWER PART OF THE LINK) AND TORSO LINK -->
+
+        <joint name="${prefix}hip_flexor_joint" type="revolute">
+            <origin xyz="0.0 0.0 -${HIP_ROT_LENGTH/2}" rpy="-${M_PI/2} -0.0 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI*3.0/180.0}" upper="${M_PI*3.0/180.0}" velocity="0.26"/>
+            <parent link="${prefix}hip_rotor_link"/>
+            <child link="${prefix}hip_flexor_link"/>
+        </joint>
+
+	<transmission name="${prefix}hip_flexor_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}hip_flexor_joint">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}hip_flexor_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}hip_flexor_link">
+            <visual>
+                <origin xyz="0.0 ${HIP_FLEX_LENGTH/2+0.01} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}hip_flexor_link_visual_geom">
+                    <box size="0.1 ${HIP_FLEX_LENGTH-0.01} 0.15" />
+                </geometry>
+                <material name="Green">
+                    <color rgba="0 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${HIP_FLEX_LENGTH/2+0.01} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}hip_flexor_link_coll_geom">
+                    <box size="0.1 ${HIP_FLEX_LENGTH-0.01} 0.15" />
+                </geometry>
+            </collision>
+    	    <inertial>
+    		  <mass value="1" />:
+    		  <inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}hip_flexor_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+        
+<!-- FLEXION OF THE NECK ON TOP OF THE TORSO-->
+
+        <joint name="${prefix}neck_flexor_joint" type="revolute">
+            <origin xyz="0.0 ${HIP_FLEX_LENGTH + SHOULDER_TO_NECK_LENGTH} 0.0" rpy="${M_PI} -0.0 ${M_PI/2}"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI*30/180}" upper="${M_PI*30/180}" velocity="0.26"/>
+            <parent link="${prefix}hip_flexor_link"/>
+            <child link="${prefix}neck_flexor_link"/>
+        </joint>
+
+	<transmission name="${prefix}neck_flexor_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}neck_flexor_joint">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}neck_flexor_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}neck_flexor_link">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}neck_flexor_link_visual_geom">
+                    <box size="0.0 0.0 0.0" />
+                </geometry>
+                 <material name="Yellow">
+                <color rgba="1 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}neck_flexor_link_coll_geom">
+                    <box size="0.0 0.0 0.0" />
+                </geometry>
+            </collision>
+    	    <inertial>
+       		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+     	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}neck_flexor_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+
+<!-- ROTATION OF THE WHOLE NECK AND NECK LINK -->
+
+        <joint name="${prefix}neck_rotor_joint" type="revolute">
+            <origin xyz="0.0 0.0 0.0" rpy="${M_PI/2} -0.0 ${M_PI/2}"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/2}" upper="${M_PI/2}" velocity="0.26"/>
+            <parent link="${prefix}neck_flexor_link"/>
+            <child link="${prefix}neck_rotor_link"/>
+        </joint>
+
+	<transmission name="${prefix}neck_rotor_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}neck_rotor_joint">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}neck_rotor_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}neck_rotor_link">
+            <visual>
+                <origin xyz="0.0 0.0 ${(NECK_LENGTH-0.02)/2}" rpy="0 0 0" />
+                <geometry name="${prefix}neck_rotor_link_visual_geom">
+                     <cylinder length="${NECK_LENGTH-0.02}" radius="0.03"/>
+                </geometry>
+                <material name="Cyan">
+       			<color rgba="0 1 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 ${(NECK_LENGTH-0.02)/2}" rpy="0 0 0" />
+                <geometry name="${prefix}neck_rotor_link_coll_geom">
+                    <cylinder length="${NECK_LENGTH-0.02}" radius="0.03"/>
+                </geometry>
+            </collision>
+    	    <inertial>
+    		<mass value="1" />:
+    		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}neck_rotor_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+
+<!-- HEAD ATTACHED TO THE NECK -->
+        
+        <joint name="${prefix}head_joint" type="fixed">
+            <origin xyz="0.0 0.0 ${NECK_LENGTH}" rpy="${M_PI/2} 0.0 ${M_PI/2}"/>
+            <parent link="${prefix}neck_rotor_link"/>
+            <child link="${prefix}head_link"/>
+        </joint>
+
+        <link name="${prefix}head_link">
+            <visual>
+                <origin xyz="0.0 0.0 0.05" rpy="0 0 0" />
+                <geometry name="${prefix}head_link_visual_geom">
+                    <mesh filename="package://bert2_gazebo/meshes/bert2_head.dae"  />
+                </geometry>
+                <material name="White">
+                <color rgba="0 0 0 1"/>
+		 </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.1" rpy="0 0 0" />
+                <geometry name="${prefix}head_link_coll_geom">
+                    <box size="0.012 0.012 0.06" />
+                </geometry>
+            </collision>
+    	    <inertial>
+      		<mass value="1" />:
+      	        <inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}head_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+       <material>Gazebo/White</material>
+  	</gazebo>
+
+
+<!-- RIGHT ARM SEGMENTS, FIXED AND STATIC SINCE IT DOES NOT WORK IN THE REAL ROBOT -->
+
+        <joint name="${prefix}right_shoulder_flex_joint" type="revolute">
+            <origin xyz="0.0 ${HIP_FLEX_LENGTH-0.035} 0.075" rpy="0.0 -0.0 ${M_PI/2}"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/4}" upper="${M_PI/4}" velocity="0"/>
+            <parent link="${prefix}hip_flexor_link"/>
+            <child link="${prefix}right_shoulder_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}right_shoulder_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}right_shoulder_flex_joint">
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}right_shoulder_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}right_shoulder_flex_link">
+            <visual>
+			<origin xyz="0.0 0.0 0.075" rpy="0 0 0" />
+                <geometry name="${prefix}right_shoulder_flex_link_visual_geom">
+                     <cylinder length="0.15" radius="0.0413"/>
+                </geometry>
+                <material name="Purple">
+                    <color rgba="1 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.075" rpy="0 0 0" />
+                <geometry name="${prefix}right_shoulder_flex_link_coll_geom">
+                    <cylinder length="0.15" radius="0.0413"/>
+                </geometry>
+            </collision>
+    	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_shoulder_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+        
+
+<!-- SHOULDER ABDUCTION: VERTICAL AND/OR HORIZONTAL MOVEMENT OF UPPER ARM,
+				 		 DEPENDING ON SHOULDER FLEX POSITION -->
+  
+        <joint name="${prefix}right_shoulder_abduction_joint" type="fixed">
+            <!-- Two versions of origin rpy: The second version is used to keep the
+                 right arm at the robot's side while it's out of action. The first
+                 version should be reinstated when the right arm is recomissioned. -->
+            <!-- origin xyz="0 0 0.125" rpy="${M_PI/2} ${M_PI/4} 0.0"/ -->
+            <origin xyz="0 0 0.125" rpy="${M_PI/2} 0.0 0.0"/>
+            <!-- axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/4}" upper="${M_PI/4}" velocity="5"/ -->
+            <parent link="${prefix}right_shoulder_flex_link"/>
+            <child link="${prefix}right_shoulder_abduction_link"/>
+        </joint>
+
+	    <!-- transmission name="${prefix}right_shoulder_abduction_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}right_shoulder_abduction_joint">
+ 		        <hardwareInterface>EffortJointInterface</hardwareInterface>
+	        </joint>
+   	    	<actuator name="${prefix}right_shoulder_abduction_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission -->
+
+        <link name="${prefix}right_shoulder_abduction_link">
+            <visual>
+                <origin xyz="-${(HUMERAL_LENGTH)/4.0+0.025} 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_shoulder_abduction_link_visual_geom">
+                    <box size="${(HUMERAL_LENGTH)/2.0-0.05} 0.053 0.053"/>
+                </geometry>
+                <material name="Blue">
+                    <color rgba="0 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="-${(HUMERAL_LENGTH)/4.0+0.03} 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_shoulder_abduction_link_coll_geom">
+                    <box size="${(HUMERAL_LENGTH)/2.0-0.06} 0.053 0.053"/>
+                </geometry>
+            </collision>
+    	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_shoulder_abduction_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+
+<!-- ROTATION OF THE UPPER ARM -->
+
+        <joint name="${prefix}right_humeral_rot_joint" type="fixed">
+            <origin xyz="-${HUMERAL_LENGTH/2} 0.0 0.0" rpy="${M_PI/2} -0.0 -${M_PI/2}"/>
+            <!-- axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/2}" upper="${M_PI/2}" velocity="5"/ -->
+            <parent link="${prefix}right_shoulder_abduction_link"/>
+            <child link="${prefix}right_humeral_rot_link"/>
+        </joint>
+
+		<!-- transmission name="${prefix}right_humeral_rot_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}right_humeral_rot_joint">
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
+ 	    	</joint>
+   	    	<actuator name="${prefix}right_humeral_rot_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission -->
+
+        <link name="${prefix}right_humeral_rot_link">
+            <visual>
+                <origin xyz="0.0 0.0 ${HUMERAL_LENGTH/4}" rpy="0 0 0" />
+                <geometry name="${prefix}right_humeral_rot_link_visual_geom">
+                    <box size="0.053 0.053 ${HUMERAL_LENGTH/2}" />
+                </geometry>
+                <material name="Red">
+                    <color rgba="1 0 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 ${HUMERAL_LENGTH/4}" rpy="0 0 0" />
+                <geometry name="${prefix}right_humeral_rot_link_coll_geom">
+                    <box size="0.0318 0.0318 ${HUMERAL_LENGTH*0.6/2}" />
+                </geometry>
+            </collision>
+    	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_humeral_rot_link">
+   	   <turnGravityOff>false</turnGravityOff>
+	   <selfCollide>true</selfCollide>
+  	</gazebo>
+
+<!-- FLEXION OF THE ELBOW AND FOREARM LINK -->
+
+
+
+        <joint name="${prefix}right_elbow_flex_joint" type="fixed">
+            <!-- Two versions of origin rpy: The second version is used to keep the
+                 right arm at the robot's side while it's out of action. The first
+                 version should be reinstated when the right arm is recomissioned. -->
+            <!-- origin xyz="0.0 0.0 ${HUMERAL_LENGTH/2}" rpy="${M_PI/2} ${M_PI/4} ${M_PI/2}"/ -->
+            <origin xyz="0.0 0.0 ${HUMERAL_LENGTH/2}" rpy="${M_PI/2} 0.0 ${M_PI/2}"/>
+            <!-- axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI*(5.0/18.0)}" upper="${M_PI*(5.0/18.0)}" velocity="5"/ -->
+            <parent link="${prefix}right_humeral_rot_link"/>
+            <child link="${prefix}right_elbow_flex_link"/>
+        </joint>
+
+		<!-- transmission name="${prefix}right_elbow_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}right_elbow_flex_joint"> 
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    	</joint>
+   	    	<actuator name="${prefix}right_elbow_flex_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission -->
+
+        <link name="${prefix}right_elbow_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FOREARM_LENGTH-0.01)/4.0+0.01} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_elbow_flex_link_visual_geom">
+                    <box size="0.053 ${(FOREARM_LENGTH-0.01)/2} 0.053" />
+                </geometry>
+                <material name="Green">
+       			<color rgba="0 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FOREARM_LENGTH-0.01)/2+0.01} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_elbow_flex_link_coll_geom">
+                    <box size="0.053 ${(FOREARM_LENGTH-0.01)/2} 0.053" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_elbow_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+
+<!-- ROTATION OF THE WRIST AND WRIST LINK-->
+
+        <joint name="${prefix}right_wrist_pronation_joint" type="fixed">
+            <origin xyz="0.0 ${FOREARM_LENGTH/2.0} 0.0" rpy="-${M_PI/2} -0.0 0.0"/>
+            <!-- axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/2}" upper="${M_PI/2}" velocity="5"/ -->
+            <parent link="${prefix}right_elbow_flex_link"/>
+            <child link="${prefix}right_wrist_pronation_link"/>
+        </joint>
+
+		<!-- transmission name="${prefix}right_wrist_pronation_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}right_wrist_pronation_joint">
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
+ 		    </joint>
+   		    <actuator name="${prefix}right_wrist_pronation_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  		    </actuator>
+		</transmission -->
+
+        <link name="${prefix}right_wrist_pronation_link">
+            <visual>
+                <origin xyz="0.0 0.0 ${FOREARM_LENGTH/4.0+WRIST_LENGTH/2.0}" rpy="0 0 0" />
+                <geometry name="${prefix}right_wrist_pronation_link_visual_geom">
+                    <box size="0.04086 0.04086 ${FOREARM_LENGTH/2.0+WRIST_LENGTH}" />
+                </geometry>
+                 <material name="Yellow">
+                <color rgba="1 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 ${FOREARM_LENGTH/4.0+WRIST_LENGTH/2.0}" rpy="0 0 0" />
+                <geometry name="${prefix}right_wrist_pronation_link_coll_geom">
+                    <box size="0.024516 0.024516 ${FOREARM_LENGTH*0.6/2+WRIST_LENGTH*0.6}" />
+                </geometry>
+            </collision>
+ 	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_wrist_pronation_link">
+   	   <turnGravityOff>false</turnGravityOff>
+	   <selfCollide>true</selfCollide>
+  	</gazebo>
+
+<!-- ABDUCTION OF THE WRIST (HAND MOTION IN SAME PLANE AS PALM) -->
+
+
+
+        <joint name="${prefix}right_wrist_abduction_joint" type="fixed">
+            <origin xyz="0.0 0.0 ${FOREARM_LENGTH/2+WRIST_LENGTH}" rpy="${M_PI/2} -0.0 0.0"/>
+            <!-- axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/18}" upper="${M_PI/18}" velocity="5"/ -->
+            <parent link="${prefix}right_wrist_pronation_link"/>
+            <child link="${prefix}right_wrist_abduction_link"/>
+        </joint>
+
+		<!-- transmission name="${prefix}right_wrist_abduction_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}right_wrist_abduction_joint">
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
+ 	    	</joint>
+   	    	<actuator name="${prefix}right_wrist_abduction_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission -->
+
+        <link name="${prefix}right_wrist_abduction_link">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_wrist_abduction_link_visual_geom">
+                    <box size="0.0 0.0 0.0" />
+                </geometry>
+                <material name="Cyan">
+                    <color rgba="0 1 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_wrist_abduction_link_coll_geom">
+                    <box size="0.0 0.0 0.0" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_wrist_abduction_link">
+   	    <turnGravityOff>false</turnGravityOff>
+	    <selfCollide>true</selfCollide>
+  	</gazebo>
+
+
+<!-- RIGHT HAND -->
+<!-- FLEXION OF THE WRIST AND PALM LINK -->
+
+        <joint name="${prefix}right_wrist_flex_joint" type="fixed">
+            <origin xyz="0.0 0.0 0.0" rpy="${M_PI/2} -0.0 ${M_PI/2}"/>
+            <!-- axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/4}" upper="${M_PI/4}" velocity="5"/ -->
+            <parent link="${prefix}right_wrist_abduction_link"/>
+            <child link="${prefix}right_wrist_flex_link"/>
+        </joint>
+
+		<!-- transmission name="${prefix}right_wrist_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}right_wrist_flex_joint">
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    	</joint>
+   	    	<actuator name="${prefix}right_wrist_flex_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission -->
+
+        <link name="${prefix}right_wrist_flex_link">
+            <visual>
+                <origin xyz="${(PALM_LENGTH-0.005)/2.0+0.005} 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_wrist_flex_link_visual_geom">
+                    <box size="${PALM_LENGTH} 0.03 0.09" />
+                </geometry>
+                <material name="Purple">
+                    <color rgba="1 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="${(PALM_LENGTH-0.005)/2.0+0.005} 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_wrist_flex_link_visual_geom">
+                    <box size="${PALM_LENGTH} 0.03 0.09" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_wrist_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+
+
+<!-- MIDDLE FINGER, SEGMENT CLOSE TO PALM -->
+
+	<joint name="${prefix}right_mid_finger_flex_joint" type="fixed">
+            <origin xyz="${PALM_LENGTH} 0.0 0.01125" rpy="0.0 0.0 -${M_PI/2}"/>
+            <parent link="${prefix}right_wrist_flex_link"/>
+            <child link="${prefix}right_mid_finger_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_mid_finger_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_mid_finger_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Blue">
+                    <color rgba="0 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_mid_finger_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_mid_finger_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+<!-- MIDDLE FINGER, SECOND SEGMENT -->
+
+	<joint name="${prefix}right_mid_finger2_flex_joint" type="fixed">
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH} 0.0" rpy="0.0 0.0 0.0"/>
+            <parent link="${prefix}right_mid_finger_flex_link"/>
+            <child link="${prefix}right_mid_finger2_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_mid_finger2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_mid_finger2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Red">
+       			<color rgba="1 0 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_mid_finger2_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_mid_finger2_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+ 
+
+<!-- INDEX FINGER, SEGMENT CLOSER TO PALM -->
+
+	<joint name="${prefix}right_index_finger_flex_joint" type="fixed">
+            <origin xyz="${PALM_LENGTH} 0.0 0.03375" rpy="0.0 0.0 -${M_PI/2}"/>
+            <parent link="${prefix}right_wrist_flex_link"/>
+            <child link="${prefix}right_index_finger_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_index_finger_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_index_finger_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Green">
+       			<color rgba="0 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_index_finger_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_index_finger_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+
+<!-- INDEX FINGER, SECOND SEGMENT -->
+
+	<joint name="${prefix}right_index_finger2_flex_joint" type="fixed">
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH} 0.0" rpy="0.0 0.0 0.0"/>
+            <parent link="${prefix}right_index_finger_flex_link"/>
+            <child link="${prefix}right_index_finger2_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_index_finger2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_index_finger2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Yellow">
+                    <color rgba="1 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_index_finger2_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_index_finger2_flex_link">
+	    	<selfCollide>true</selfCollide>
+   	   		<turnGravityOff>false</turnGravityOff>
+  		</gazebo>
+
+<!-- ANULAR FINGER, SEGMENT CLOSER TO PALM -->
+
+	<joint name="${prefix}right_anular_finger_flex_joint" type="fixed">
+            <origin xyz="${PALM_LENGTH} 0.0 -0.01125" rpy="0.0 0.0 -${M_PI/2}"/>
+            <parent link="${prefix}right_wrist_flex_link"/>
+            <child link="${prefix}right_anular_finger_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_anular_finger_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_anular_finger_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Cyan">
+                    <color rgba="0 1 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_anular_finger_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_anular_finger_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+<!-- ANULAR FINGER, SECOND SEGMENT -->
+
+		<joint name="${prefix}right_anular_finger2_flex_joint" type="fixed">	
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH} 0.0" rpy="0.0 0.0 0.0"/>
+            <parent link="${prefix}right_anular_finger_flex_link"/>
+            <child link="${prefix}right_anular_finger2_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_anular_finger2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_anular_finger2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Purple">
+                    <color rgba="1 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_anular_finger2_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_anular_finger2_flex_link">
+	   		<selfCollide>true</selfCollide>
+   	   		<turnGravityOff>false</turnGravityOff>
+  		</gazebo>
+
+<!-- LITTLE FINGER, SEGMENT CLOSER TO PALM -->
+
+		<joint name="${prefix}right_little_finger_flex_joint" type="fixed">
+            <origin xyz="${PALM_LENGTH} 0.0 -0.03375" rpy="0.0 0.0 -${M_PI/2}"/>
+            <parent link="${prefix}right_wrist_flex_link"/>
+            <child link="${prefix}right_little_finger_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_little_finger_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_little_finger_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Blue">
+                    <color rgba="0 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_little_finger_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_little_finger_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+<!-- LITTLE FINGER, SECOND SEGMENT -->
+
+	<joint name="${prefix}right_little_finger2_flex_joint" type="fixed">
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH} 0.0" rpy="0.0 0.0 0.0"/>
+            <parent link="${prefix}right_little_finger_flex_link"/>
+            <child link="${prefix}right_little_finger2_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_little_finger2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_little_finger2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Red">
+                    <color rgba="1 0 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_little_finger2_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_little_finger2_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+<!-- THUMB, CLOSER TO PALM -->
+
+	<joint name="${prefix}right_thumb_flex_joint" type="fixed">
+            <origin xyz="${2*PALM_LENGTH/3} 0.02 0.03375" rpy="0.0 0.0 -${M_PI/2}"/>
+            <parent link="${prefix}right_wrist_flex_link"/>
+            <child link="${prefix}right_thumb_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_thumb_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_thumb_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Green">
+                    <color rgba="0 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_thumb_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_thumb_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+<!-- THUMB, SECOND SEGMENT -->
+
+	<joint name="${prefix}right_thumb2_flex_joint" type="fixed">
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH} 0.0" rpy="0.0 0.0 0.0"/>
+            <parent link="${prefix}right_thumb_flex_link"/>
+            <child link="${prefix}right_thumb2_flex_link"/>
+        </joint>
+
+        <link name="${prefix}right_thumb2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_thumb2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Yellow">
+                    <color rgba="1 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}right_thumb2_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}right_thumb2_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+
+<!-- LEFT ARM-->
+<!-- SHOULDER LINK WITH FLEXION (ROTATION) -->
+
+        <joint name="${prefix}left_shoulder_flex_joint" type="revolute">
+            <origin xyz="0.0 ${HIP_FLEX_LENGTH-0.035} -0.075" rpy="0.0 ${M_PI} -${M_PI/2+0.2}"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/4}" upper="${M_PI/4}" velocity="0.26"/>
+            <parent link="${prefix}hip_flexor_link"/>
+            <child link="${prefix}left_shoulder_flex_link"/>
+        </joint>
+
+		<transmission name="${prefix}left_shoulder_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_shoulder_flex_joint"> 
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    	</joint>
+   	    	<actuator name="${prefix}left_shoulder_flex_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission>
+
+        <link name="${prefix}left_shoulder_flex_link">
+            <visual>
+                <origin xyz="0.0 0.0 0.075" rpy="0 0 0" />
+                <geometry name="${prefix}left_shoulder_flex_link_visual_geom">
+		    		<cylinder length="0.15" radius="0.0413"/>
+                </geometry>
+                <material name="Cyan">
+                    <color rgba="0 1 1 1"/>
+                </material>
+            </visual>
+			<collision>
+                <origin xyz="0.0 0.0 0.075" rpy="0 0 0" />
+                <geometry name="${prefix}left_shoulder_flex_link_coll_geom">
+		    		<cylinder length="0.15" radius="0.0413"/>
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_shoulder_flex_link">
+	   	<selfCollide>true</selfCollide>
+   	   	<turnGravityOff>false</turnGravityOff>
+	   	<material>Gazebo/White</material>
+  	</gazebo>
+        
+<!-- SHOULDER ABDUCTION AND HUMERAL LINK-->
+
+        <joint name="${prefix}left_shoulder_abduction_joint" type="revolute">
+            <origin xyz="0.0 0.0 0.125" rpy="${M_PI/2} ${M_PI/4} 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/4}" upper="${M_PI/4}" velocity="0.26"/>
+            <parent link="${prefix}left_shoulder_flex_link"/>
+            <child link="${prefix}left_shoulder_abduction_link"/>
+        </joint>
+
+		<transmission name="${prefix}left_shoulder_abduction_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_shoulder_abduction_joint"> 
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    	</joint>
+   	    	<actuator name="${prefix}left_shoulder_abduction_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission>
+
+        <link name="${prefix}left_shoulder_abduction_link">
+            <visual>
+                <origin xyz="-${(HUMERAL_LENGTH)/4.0+0.025} 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_shoulder_abduction_link_visual_geom">
+                     <box size="${HUMERAL_LENGTH/2.0-0.05} 0.053 0.053"/>
+                </geometry>
+                <material name="Purple">
+                    <color rgba="1 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="-${(HUMERAL_LENGTH)/4.0+0.03} 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_shoulder_abduction_link_visual_geom">
+                     <box size="${HUMERAL_LENGTH/2.0-0.06} 0.053 0.053"/>
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_shoulder_abduction_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+
+
+
+
+        <joint name="${prefix}left_humeral_rot_joint" type="revolute">
+            <origin xyz="-${HUMERAL_LENGTH/2.0} -0.0 0.0" rpy="0.0 -${M_PI/2} 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/2}" upper="${M_PI/2}" velocity="0.26"/>
+            <parent link="${prefix}left_shoulder_abduction_link"/>
+            <child link="${prefix}left_humeral_rot_link"/>
+        </joint>
+
+		<transmission name="${prefix}left_humeral_rot_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_humeral_rot_joint"> 
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    	</joint>
+   	    	<actuator name="${prefix}left_humeral_rot_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission>
+
+        <link name="${prefix}left_humeral_rot_link">
+            <visual>
+                <origin xyz="0.0 0.0 ${HUMERAL_LENGTH/4.0}" rpy="0 0 0" />
+                <geometry name="${prefix}left_humeral_rot_link_visual_geom">
+                    <box size="0.053 0.053 ${HUMERAL_LENGTH/2.0}" />
+                </geometry>
+                <material name="Blue">
+                    <color rgba="0 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 ${HUMERAL_LENGTH/4.0}" rpy="0 0 0" />
+                <geometry name="${prefix}left_humeral_rot_link_coll_geom">
+                    <box size="0.0318 0.0318 ${HUMERAL_LENGTH*0.6/2.0}" />
+                </geometry>
+            </collision>
+	    	<inertial>
+      			<mass value="1" />:
+      			<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    	</inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_humeral_rot_link">
+   	   <turnGravityOff>false</turnGravityOff>
+	   <selfCollide>true</selfCollide>
+  	</gazebo>
+
+
+
+
+        <joint name="${prefix}left_elbow_flex_joint" type="revolute">
+            <origin xyz="0.0 0.0 ${HUMERAL_LENGTH/2.0}" rpy="${M_PI/2} -${M_PI/4} 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI*(5.0/18.0)}" upper="${M_PI*(5.0/18.0)}" velocity="0.26"/>
+            <parent link="${prefix}left_humeral_rot_link"/>
+            <child link="${prefix}left_elbow_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_elbow_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_elbow_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_elbow_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_elbow_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FOREARM_LENGTH-0.01)/4.0+0.01} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_elbow_flex_link_visual_geom">
+                    <box size="0.053 ${(FOREARM_LENGTH-0.01)/2.0} 0.053" />
+                </geometry>
+                <material name="Red">
+                    <color rgba="1 0 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FOREARM_LENGTH-0.01)/4.0+0.01} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_elbow_flex_link_coll_geom">
+                    <box size="0.053 ${(FOREARM_LENGTH-0.01)/2.0} 0.053" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_elbow_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+	   <material>Gazebo/White</material>
+  	</gazebo>
+
+
+
+
+        <joint name="${prefix}left_wrist_pronation_joint" type="revolute">
+            <origin xyz="0.0 ${FOREARM_LENGTH/2.0} 0.0" rpy="-${M_PI/2} -0.0 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/2}" upper="${M_PI/2}" velocity="0.26"/>
+            <parent link="${prefix}left_elbow_flex_link"/>
+            <child link="${prefix}left_wrist_pronation_link"/>
+        </joint>
+
+	<transmission name="${prefix}nleft_wrist_pronation_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_wrist_pronation_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_wrist_pronation_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_wrist_pronation_link">
+            <visual>
+                <origin xyz="0.0 0.0 ${FOREARM_LENGTH/4.0+WRIST_LENGTH/2.0}" rpy="0 0 0" />
+                <geometry name="${prefix}left_wrist_pronation_link_visual_geom">
+                    <box size="0.04086 0.04086 ${FOREARM_LENGTH/2.0+WRIST_LENGTH}" />
+                </geometry>
+                <material name="Green">
+                    <color rgba="0 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 ${FOREARM_LENGTH/4.0+WRIST_LENGTH/2.0}" rpy="0 0 0" />
+                <geometry name="${prefix}left_wrist_pronation_link_coll_geom">
+                    <box size="0.053 0.053 ${FOREARM_LENGTH*0.6/2.0+WRIST_LENGTH*0.6}" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_wrist_pronation_link">
+   	   <turnGravityOff>false</turnGravityOff>
+	   <selfCollide>true</selfCollide>
+  	</gazebo>
+
+
+
+
+        <joint name="${prefix}left_wrist_abduction_joint" type="revolute">
+            <origin xyz="0.0 0.0 ${FOREARM_LENGTH/2.0+WRIST_LENGTH}" rpy="${M_PI/2} -0.0 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/18}" upper="${M_PI/18}" velocity="0.26"/>
+            <parent link="${prefix}left_wrist_pronation_link"/>
+            <child link="${prefix}left_wrist_abduction_link"/>
+        </joint>
+
+		<transmission name="${prefix}left_wrist_abduction_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_wrist_abduction_joint"> 
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    	</joint>
+   	    	<actuator name="${prefix}left_wrist_abduction_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission>
+
+        <link name="${prefix}left_wrist_abduction_link">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_wrist_abduction_link_visual_geom">
+                    <box size="0.0 0.0 0.0" />
+                </geometry>
+                <material name="Yellow">
+                    <color rgba="1 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_wrist_abduction_link_coll_geom">
+                    <box size="0.0 0.0 0.0" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_wrist_abduction_link">
+   	   <turnGravityOff>false</turnGravityOff>
+	   <selfCollide>true</selfCollide>
+  	</gazebo>
+
+
+
+
+        <joint name="${prefix}left_wrist_flex_joint" type="revolute">
+            <origin xyz="0.0 0.0 0.0" rpy="${M_PI/2} -0.0 ${M_PI/2}"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="100" lower="-${M_PI/4}" upper="${M_PI/4}" velocity="0.26"/>
+            <parent link="${prefix}left_wrist_abduction_link"/>
+            <child link="${prefix}left_wrist_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_wrist_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_wrist_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_wrist_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_wrist_flex_link">
+            <visual>
+                <origin xyz="${(PALM_LENGTH-0.005)/2+0.005} 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_wrist_flex_link_visual_geom">
+                    <box size="${PALM_LENGTH-0.005} 0.03 0.09" />
+                </geometry>
+                <material name="Cyan">
+                    <color rgba="0 1 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="${(PALM_LENGTH-0.005)/2+0.005} 0.0 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_wrist_flex_link_coll_geom">
+                    <box size="${PALM_LENGTH-0.005} 0.03 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="1" />:
+      		<inertia ixx="0.13" iyy="0.524" izz="0.539" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_wrist_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+<!-- MIDDLE FINGER, CLOSER TO PALM -->
+
+	<joint name="${prefix}left_mid_finger_flex_joint" type="revolute">
+            <origin xyz="${PALM_LENGTH} 0.0 -0.01125" rpy="0.0 ${M_PI} -${M_PI/2.0}"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="-${M_PI/2}" upper="0.0" velocity="1"/>
+            <parent link="${prefix}left_wrist_flex_link"/>
+            <child link="${prefix}left_mid_finger_flex_link"/>
+        </joint>
+
+		<transmission name="${prefix}left_mid_finger_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_mid_finger_flex_joint"> 
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    	</joint>
+   	    	<actuator name="${prefix}left_mid_finger_flex_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  	    	</actuator>
+		</transmission>
+
+        <link name="${prefix}left_mid_finger_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_mid_finger_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Purple">
+                    <color rgba="1 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_mid_finger_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_mid_finger_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+<!-- MIDDLE FINGER, SECOND SEGMENT -->
+
+	<joint name="${prefix}left_mid_finger2_flex_joint" type="revolute">
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH} 0.0" rpy="0.0 0.0 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="-${M_PI/2}" upper="0.0" velocity="1"/>
+            <parent link="${prefix}left_mid_finger_flex_link"/>
+            <child link="${prefix}left_mid_finger2_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_mid_finger2_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_mid_finger2_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_mid_finger2_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_mid_finger2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_mid_finger2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Blue">
+                    <color rgba="0 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_mid_finger2_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_mid_finger2_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+ 
+<!-- INDEX FINGER, CLOSER TO PALM -->
+
+	<joint name="${prefix}left_index_finger_flex_joint" type="revolute">
+            <origin xyz="${PALM_LENGTH} 0.0 -0.03375" rpy="0.0 ${M_PI} -${M_PI/2.0}"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="-${M_PI/2}" upper="0.0" velocity="1"/>
+            <parent link="${prefix}left_wrist_flex_link"/>
+            <child link="${prefix}left_index_finger_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_index_finger_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_index_finger_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_index_finger_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_index_finger_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_index_finger_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Red">
+                    <color rgba="1 0 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_index_finger_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_index_finger_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+<!-- INDEX FINGER, SECOND SEGMENT -->
+
+	<joint name="${prefix}left_index_finger2_flex_joint" type="revolute">
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH} 0.0" rpy="0.0 0.0 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="-${M_PI/2}" upper="0.0" velocity="1"/>
+            <parent link="${prefix}left_index_finger_flex_link"/>
+            <child link="${prefix}left_index_finger2_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_index_finger2_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_index_finger2_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_index_finger2_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_index_finger2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_index_finger2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Green">
+                    <color rgba="0 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_index_finger2_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_index_finger2_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+<!-- ANULAR FINGER, CLOSER TO PALM -->
+
+	<joint name="${prefix}left_anular_finger_flex_joint" type="revolute">
+            <origin xyz="${PALM_LENGTH} 0.0 0.01125" rpy="0.0 ${M_PI} -${M_PI/2.0}"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="-${M_PI/2}" upper="0.0" velocity="1"/>
+            <parent link="${prefix}left_wrist_flex_link"/>
+            <child link="${prefix}left_anular_finger_flex_link"/>
+        </joint>
+
+		<transmission name="${prefix}left_anular_finger_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_anular_finger_flex_joint"> 
+				<hardwareInterface>EffortJointInterface</hardwareInterface>
+		    </joint>
+   		    <actuator name="${prefix}left_anular_finger_flex_joint_motor">
+    			<hardwareInterface>EffortJointInterface</hardwareInterface>
+    			<mechanicalReduction>1</mechanicalReduction>
+  		    </actuator>
+		</transmission>
+
+        <link name="${prefix}left_anular_finger_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_anular_finger_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Yellow">
+                    <color rgba="1 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_anular_finger_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_anular_finger_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+<!-- ANULAR FINGER, SECOND SEGMENT -->
+
+	<joint name="${prefix}left_anular_finger2_flex_joint" type="revolute">
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH} 0.0" rpy="0.0 0.0 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="-${M_PI/2}" upper="0.0" velocity="1"/>
+            <parent link="${prefix}left_anular_finger_flex_link"/>
+            <child link="${prefix}left_anular_finger2_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_anular_finger2_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_anular_finger2_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_anular_finger2_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_anular_finger2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_anular_finger2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Cyan">
+                    <color rgba="0 1 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_anular_finger2_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_anular_finger2_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+<!-- LITTLE FINGER, CLOSER TO PALM -->
+
+	<joint name="${prefix}left_little_finger_flex_joint" type="revolute">
+            <origin xyz="${PALM_LENGTH} 0.0 0.03375" rpy="0.0 ${M_PI} -${M_PI/2.0}"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="-${M_PI/2}" upper="0.0" velocity="1"/>
+            <parent link="${prefix}left_wrist_flex_link"/>
+            <child link="${prefix}left_little_finger_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_little_finger_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_little_finger_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_little_finger_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_little_finger_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_little_finger_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Purple">
+                    <color rgba="1 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_little_finger_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_little_finger_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+<!-- LITTLE FINGER, SECOND SEGMENT -->
+
+	<joint name="${prefix}left_little_finger2_flex_joint" type="revolute">
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH} 0.0" rpy="0.0 0.0 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="-${M_PI/2}" upper="0.0" velocity="1"/>
+            <parent link="${prefix}left_little_finger_flex_link"/>
+            <child link="${prefix}left_little_finger2_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_little_finger2_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_little_finger2_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_little_finger2_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_little_finger2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_little_finger2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+                <material name="Blue">
+                    <color rgba="0 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${(FINGER_SEGMENT_LENGTH-0.001)/2+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_little_finger2_flex_link_coll_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH-0.001} 0.01" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_little_finger2_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+<!-- THUMB, CLOSER TO PALM
+
+            <origin xyz="${2*PALM_LENGTH/3} 0.02 -0.03375" rpy="0.0 ${M_PI} -${M_PI/2.0}"/>
+            <axis xyz="0 0 1"/> -->
+
+	<joint name="${prefix}left_thumb_flex_joint" type="revolute">
+            <origin xyz="${2*PALM_LENGTH/3} 0.02 -0.03375" rpy="0.0 ${M_PI} 0.0"/>
+            <axis xyz="-1 0 0"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="-${M_PI/4}" upper="0.0" velocity="1"/>
+            <parent link="${prefix}left_wrist_flex_link"/>
+            <child link="${prefix}left_thumb_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_thumb_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_thumb_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_thumb_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_thumb_flex_link">
+            <visual>
+                <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH/3+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_thumb_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH*2/3-0.001} 0.02" />
+                </geometry>
+                <material name="Red">
+                    <color rgba="1 0 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH/3+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_thumb_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH*2/3-0.001} 0.02" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_thumb_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+<!-- THUMB, SECOND SEGMENT -->
+
+	<joint name="${prefix}left_thumb2_flex_joint" type="revolute">
+            <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH*3/4} 0.0" rpy="0.0 0.0 0.0"/>
+            <axis xyz="0 0 1"/>
+            <limit effort="${FINGER_EFFORT_LIMIT}" lower="0.0" upper="${M_PI/2}" velocity="1"/>
+            <parent link="${prefix}left_thumb_flex_link"/>
+            <child link="${prefix}left_thumb2_flex_link"/>
+        </joint>
+
+	<transmission name="${prefix}left_thumb2_flex_joint_trans">
+    	    <type>transmission_interface/SimpleTransmission</type>
+      	    <joint name="${prefix}left_thumb2_flex_joint"> 
+		<hardwareInterface>EffortJointInterface</hardwareInterface>
+	    </joint>
+   	    <actuator name="${prefix}left_thumb2_flex_joint_motor">
+    		<hardwareInterface>EffortJointInterface</hardwareInterface>
+    		<mechanicalReduction>1</mechanicalReduction>
+  	    </actuator>
+	</transmission>
+
+        <link name="${prefix}left_thumb2_flex_link">
+            <visual>
+                <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH/3+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_thumb2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH*2/3-0.001} 0.02" />
+                </geometry>
+                <material name="Green">
+                    <color rgba="0 1 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 ${FINGER_SEGMENT_LENGTH/3+0.001} 0.0" rpy="0 0 0" />
+                <geometry name="${prefix}left_thumb2_flex_link_visual_geom">
+                    <box size="0.01 ${FINGER_SEGMENT_LENGTH*2/3-0.001} 0.02" />
+                </geometry>
+            </collision>
+	    <inertial>
+      		<mass value="0.1" />:
+      		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0" ixz="0" iyz="0" />
+	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}left_thumb2_flex_link">
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+           <!-- kp and kd for rubber -->
+           <kp>1000000.0</kp>
+           <kd>100.0</kd>
+           <mu1>1.5</mu1>
+           <mu2>1.5</mu2>
+           <fdir1>1 0 0</fdir1>
+           <maxVel>1.0</maxVel>
+           <minDepth>0.00</minDepth>
+  	</gazebo>
+
+	</xacro:macro>
+</robot>
+

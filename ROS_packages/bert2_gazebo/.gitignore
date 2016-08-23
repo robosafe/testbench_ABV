@@ -1,0 +1,6 @@
+*.pyc
+*.*~
+assertion*.txt
+meshes
+covhtml/*
+stats.txt

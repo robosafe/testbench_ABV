@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <property name="prefix" value="" />
+
+	<joint name="${prefix}pedestal_joint" type="fixed">
+            <origin xyz="0.3 -0.44 0.775" rpy="0 0 0"/>
+            <parent link="world"/>
+            <child link="${prefix}pedestal_link"/>
+        </joint>
+
+	<link name="${prefix}pedestal_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry name="${prefix}pedestal_link_visual_geom">
+                    <cylinder length="0.5" radius="0.15"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry name="${prefix}pedestal_link_coll_geom">
+                    <cylinder length="0.5" radius="0.15"/>
+                </geometry>
+            </collision>
+    	    <inertial>
+    		<mass value="10" />:
+    		<inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+    	    </inertial>
+        </link>
+
+    	<gazebo reference="${prefix}pedestal_link">
+	   <static>true</static>
+	   <material>Gazebo/White</material>
+	   <selfCollide>true</selfCollide>
+   	   <turnGravityOff>false</turnGravityOff>
+  	</gazebo>
+
+
+
+
+</robot>

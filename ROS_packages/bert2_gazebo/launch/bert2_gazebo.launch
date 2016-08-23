@@ -1,0 +1,77 @@
+<launch>
+  <!-- Created by David Western, 8th Jan 2015 -->
+  <!-- Modified by Dejanira Araiza-Illan, May 2015 -->
+  <!-- Further mods thereafter -->
+
+
+  <param name="is_this_a_simulation" value="1" />
+
+  <!-- roslaunch arguments -->
+  <arg name="paused" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+ 
+  <!--
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="worlds/empty.world" />
+    <arg name="paused" value="$(arg paused)" />
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="use_sim_time" value="true" />
+    <arg name="headless" value="$(arg headless)" />
+  </include> -->
+
+  <include file="$(find bert2_gazebo)/launch/empty_world_with_sys_plugin.launch">
+    <arg name="world_name" value="$(find bert2_gazebo)/worlds/bert2_empty.world" />
+    <arg name="paused" value="$(arg paused)" />
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="use_sim_time" value="true" />
+    <arg name="headless" value="false" /> <!-- Strangely, setting this to true (when gui=false above) seems to REDUCE speed (real-time factor) by about 30 percent.  I would expect 'headless' mode to increase speed. -->
+    <arg name="use_server_plugin" value="false" />
+    <arg name="use_client_plugin" value="false" />
+  </include>
+
+  <!-- Load robot to Parameter Server-->
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find bert2_description)/robots/bert2_gazebo.urdf.xacro'" />
+  <node name="bert2_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" 
+    args="-urdf -param robot_description -model bert2" />
+
+  <!-- Load cylindrical object -->
+  <param name="object_description" command="$(find xacro)/xacro.py '$(find bert2_gazebo)/robots/bert2_object.urdf.xacro'" />
+  <node name="object_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" 
+    args="-urdf -param object_description -model object -x 0.3 -y -0.3 -z 1.3" /> 
+  
+    
+   <!-- Load human head and hand -->
+  <param name="human_head_description" command="$(find xacro)/xacro.py '$(find bert2_gazebo)/robots/human_head.urdf.xacro'" />
+  <node name="human_head_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" 
+    args="-urdf -param human_head_description -model human_head -x 1.15 -y -0.25 -z 1.4"/> 
+    
+  <param name="human_hand_description" command="$(find xacro)/xacro.py '$(find bert2_gazebo)/robots/human_hand.urdf.xacro'" />
+  <node name="human_hand_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" 
+    args="-urdf -param human_hand_description -model human_hand -x 1.15 -y -0.4 -z 0.73"/> 
+
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find bert2_gazebo)/config/joint_controllers.yaml" command="load"/> 
+
+  <!-- Load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/bert2" args="hip_rotor_joint_posControlr hip_flexor_joint_posControlr neck_flexor_joint_posControlr neck_rotor_joint_posControlr left_shoulder_flex_joint_posControlr left_shoulder_abduction_joint_posControlr left_humeral_rot_joint_posControlr left_elbow_flex_joint_posControlr left_wrist_pronation_joint_posControlr left_wrist_abduction_joint_posControlr left_wrist_flex_joint_posControlr left_index_finger_flex_joint_posControlr left_index_finger2_flex_joint_posControlr left_mid_finger_flex_joint_posControlr left_mid_finger2_flex_joint_posControlr  left_anular_finger_flex_joint_posControlr left_anular_finger2_flex_joint_posControlr left_little_finger_flex_joint_posControlr left_little_finger2_flex_joint_posControlr left_thumb_flex_joint_posControlr left_thumb2_flex_joint_posControlr right_shoulder_flex_joint_posControlr joint_state_controller"/>
+
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+  <remap from="/joint_states" to="/bert2/joint_states"/>
+  </node>
+
+  <include file="$(find bert2_gazebo_moveit_config)/launch/move_group.launch" />
+
+  <node name="bert2_gazebo_motor_controller" pkg="bert2_gazebo" type="bert2_gazebo_motor_controller.py" respawn="true" output="screen" />
+
+  <node name="gazebo2vicon" pkg="bert2_gazebo" type="GazeboToViconBroadcaster.py" respawn="false" output="screen" args="human_head human_hand object" />
+
+</launch>

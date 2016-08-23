@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package>
+  <name>bert2_interface</name>
+  <version>0.1.0</version>
+  <description>
+    Convenient python interface classes for control
+    of the Bristol Elumotion Robotic Torso (BERT) Robot.
+  </description>
+
+  <maintainer email="abroun@dawnrobotics.co.uk">Alan Broun</maintainer>
+
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rospy</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>bert2_core_msgs</build_depend>
+  <build_depend>control_msgs</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>trajectory_msgs</build_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>actionlib</run_depend>
+  <run_depend>bert2_core_msgs</run_depend>
+  <run_depend>control_msgs</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>trajectory_msgs</run_depend>
+
+  <!--<export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>-->
+</package>

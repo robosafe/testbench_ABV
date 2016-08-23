@@ -1,0 +1,121 @@
+# Created by David Western, Jan 6, 2014.
+# PID values adjusted by Dejanira Araiza-Illan for the IROS paper, February 2015. 
+# New controllers added by Dejanira Araiza-Illan, March 2015.
+
+bert2:
+
+
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+
+
+  # Position Controllers ---------------------------------------
+  # Torso links ------------------------------------------------
+  hip_rotor_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: hip_rotor_joint
+    pid: {p: 8500.0, i: 500.0, d: 800.0}
+  hip_flexor_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: hip_flexor_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  neck_flexor_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: neck_flexor_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  neck_rotor_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: neck_rotor_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+
+  # Right arm, static otherwise---------------------------------
+  right_shoulder_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: right_shoulder_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+
+  # Left arm --------------------------------------------------
+  left_shoulder_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_shoulder_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 800.0}
+  left_shoulder_abduction_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_shoulder_abduction_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_humeral_rot_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_humeral_rot_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_elbow_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_elbow_flex_joint
+    pid: {p: 8000.0, i: 200.0, d: 750.0}
+  left_wrist_pronation_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_wrist_pronation_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_wrist_abduction_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_wrist_abduction_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_wrist_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_wrist_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+
+  # Left hand----------------------------------------------------
+  left_mid_finger_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_mid_finger_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_mid_finger2_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_mid_finger2_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_index_finger_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_index_finger_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_index_finger2_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_index_finger2_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_anular_finger_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_anular_finger_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_anular_finger2_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_anular_finger2_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_little_finger_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_little_finger_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_little_finger2_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_little_finger2_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_thumb_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_thumb_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+  left_thumb2_flex_joint_posControlr:
+    type: effort_controllers/JointPositionController
+    joint: left_thumb2_flex_joint
+    pid: {p: 8500.0, i: 500.0, d: 250.0}
+    
+#human:
+
+#  joint_state_controller:
+#    type: joint_state_controller/JointStateController
+#    publish_rate: 50  
+    
+#  head_rotor_joint_posControlr:
+#    type: effort_controllers/JointPositionController
+#    joint: head_rotor_joint
+#    pid: {p: 8500.0, i: 500.0, d: 250.0}
+

@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="human_hand">
+  <xacro:include filename="$(find bert2_gazebo)/urdf/materials.xacro" />
+  <xacro:include filename="$(find bert2_gazebo)/urdf/human_hand.urdf.xacro" />
+</robot>

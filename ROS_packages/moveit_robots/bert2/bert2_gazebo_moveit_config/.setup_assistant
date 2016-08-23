@@ -1,0 +1,8 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: bert2_description
+    relative_path: robots/bert2_gazebo.urdf.xacro
+  SRDF:
+    relative_path: config/bert2.srdf
+  CONFIG:
+    generated_timestamp: 1427118517

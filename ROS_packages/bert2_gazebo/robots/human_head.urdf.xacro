@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="human_head">
+  <xacro:include filename="$(find bert2_gazebo)/urdf/materials.xacro" />
+  <xacro:include filename="$(find bert2_gazebo)/urdf/human_head.urdf.xacro" />
+  <xacro:bert2_body prefix=""/>
+</robot>
+

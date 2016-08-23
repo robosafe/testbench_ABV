@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Physics options.  See http://sdformat.org/spec?ver=1.5&elem=physics -->
+    <physics type="ode">
+      <gravity>0 0 -9.81</gravity>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <!-- Despite the required line above, real_time_factor is actually 
+           determined as max_step_size*real_time_update_rate.  Setting
+           real_time_update_rate equal to 0 tells the simulation to run as fast
+           as possible. -->
+      <real_time_update_rate>0</real_time_update_rate> 
+      <!--  <real_time_update_rate>1000</real_time_update_rate> -->
+    </physics>
+
+    <!--<plugin filename="libworld_plugin.so" name="bert2_gazebo"/>-->
+  </world>
+</sdf>

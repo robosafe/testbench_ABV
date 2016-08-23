@@ -1,0 +1,4 @@
+<launch>
+    <!-- send bert2 urdf to param server -->
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find bert2_description)/robots/bert2.urdf.xacro'" />
+</launch>
